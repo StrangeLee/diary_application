@@ -7,6 +7,6 @@ void main() {
     PlatformApp(
     debugShowCheckedModeBanner: false,
     home: MainPage(),
-    title: 'Basket Timer',
+    title: 'Diary Application',
   ));
 }

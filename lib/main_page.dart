@@ -11,7 +11,9 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
-      appBar: PlatformAppBar(),
+      appBar: PlatformAppBar(
+        title: PlatformText('Diary App'),
+      ),
       body: Center(
         child: PlatformText('main_page'),
       ),
