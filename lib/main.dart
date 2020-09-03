@@ -1,4 +1,4 @@
-import 'package:diary_application/main_page.dart';
+import 'package:diary_application/view/main_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
