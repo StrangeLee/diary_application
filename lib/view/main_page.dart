@@ -105,33 +105,36 @@ class _MainPageState extends State<MainPage> {
   }
 
   Widget _diaryListItem(Diary diary) {
-    return Container(
-      margin: EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.0),
-        border: Border.all(color: Colors.black),
-      ),
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(10, 8, 8, 8),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  PlatformText(
-                    diary.title,
-                    style: TextStyle(fontSize: 18.0),
-                  ),
-                  PlatformText(
-                    diary.uploadDate,
-                    style: TextStyle(fontSize: 13.0),
-                  ),
-                ],
-              ),
-            ],
+    return InkWell(
+      onTap: () => _showDiary(diary),
+      child: Container(
+        margin: EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+          border: Border.all(color: Colors.black),
+        ),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(10, 8, 8, 8),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    PlatformText(
+                      diary.title,
+                      style: TextStyle(fontSize: 18.0),
+                    ),
+                    PlatformText(
+                      diary.uploadDate,
+                      style: TextStyle(fontSize: 13.0),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -217,6 +220,64 @@ class _MainPageState extends State<MainPage> {
             ),
           );
         });
+  }
+
+  void _showDiary(Diary diary) {
+    showPlatformDialog(
+      barrierDismissible: true,
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            side: BorderSide(
+                // color: const Color(0xFF1BC0C5),
+                ),
+          ),
+          child: Container(
+            height: 300.0,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: PlatformText(
+                    diary.title,
+                    style: TextStyle(fontSize: 20.0),
+                  ),
+                ),
+                Container(
+                  height: 200.0,
+                  width: double.infinity,
+                  margin: EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: const Color(0xFF1BC0C5),
+                    ),
+                  ),
+                  child: PlatformText(
+                    diary.content,
+                    style: TextStyle(fontSize: 12.0),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      PlatformText(
+                        'by ${diary.uploadDate}',
+                        style: TextStyle(fontSize: 8.0),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void writeDiary(String title, String contnent) {
