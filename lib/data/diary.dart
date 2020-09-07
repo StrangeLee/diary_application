@@ -10,7 +10,7 @@ class Diary {
 
   factory Diary.fromJson(Map<String, dynamic> json) => Diary(
         id: json['id'],
-        content: json['contnent'],
+        content: json['content'],
         title: json['title'],
         uploadDate: json['uploadDate'],
       );
