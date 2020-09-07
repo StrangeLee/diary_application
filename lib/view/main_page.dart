@@ -1,7 +1,4 @@
-import 'dart:io';
-import 'dart:math';
 import 'package:intl/intl.dart';
-
 import 'package:diary_application/data/diary.dart';
 import 'package:diary_application/db.dart';
 import 'package:flutter/material.dart';
@@ -16,17 +13,6 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   @override
-  void initState() {
-    var diarys = DBHelper().getAllDiarys();
-
-    diarys.then((value) => value.forEach((element) {
-          print(element.title);
-        }));
-
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -40,21 +26,22 @@ class _MainPageState extends State<MainPage> {
           ),
         ),
         cupertino: (context, platform) => CupertinoPageScaffoldData(
-          resizeToAvoidBottomInset: false,
+          resizeToAvoidBottomInset: true,
         ),
         appBar: PlatformAppBar(
           title: PlatformText('Diary App'),
           cupertino: (context, platform) => CupertinoNavigationBarData(
-              // ios NavigatonBar Button
-              transitionBetweenRoutes: false,
-              trailing: PlatformButton(
-                padding: EdgeInsets.all(4.0),
-                child: Icon(
-                  Icons.add,
-                  color: Colors.black,
-                ),
-                onPressed: () => _showAddDialog(context),
-              )),
+            // ios NavigatonBar Button
+            transitionBetweenRoutes: false,
+            trailing: PlatformButton(
+              padding: EdgeInsets.all(4.0),
+              child: Icon(
+                Icons.add,
+                color: Colors.black,
+              ),
+              onPressed: () => _showAddDialog(context),
+            ),
+          ),
         ),
         body: _body(),
       ),
@@ -62,46 +49,50 @@ class _MainPageState extends State<MainPage> {
   }
 
   Widget _body() {
-    return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-      Padding(
-        padding: EdgeInsets.only(top: 5.0),
-        child: PlatformText(
-          '오늘 하루는 어땠나요?',
-          style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(top: 5.0),
+          child: PlatformText(
+            '오늘 하루는 어땠나요?',
+            style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
+          ),
         ),
-      ),
-      SizedBox(
-        height: 10.0,
-      ),
-      Container(
-        child: FutureBuilder(
-          future: DBHelper().getAllDiarys(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return ListView.builder(
-                shrinkWrap: true,
-                itemCount: snapshot.data.length,
-                itemBuilder: (context, index) {
-                  var item = snapshot.data[index];
-                  return Dismissible(
+        SizedBox(
+          height: 10.0,
+        ),
+        Container(
+          child: FutureBuilder(
+            future: DBHelper().getAllDiarys(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (context, index) {
+                    var item = snapshot.data[index];
+                    return Dismissible(
                       key: UniqueKey(),
                       onDismissed: (direction) {
                         DBHelper().deleteDiary(item.id);
                         setState(() {});
                       },
-                      child: _diaryListItem(item));
-                },
-              );
-            } else {
-              return Center(
-                child: PlatformCircularProgressIndicator(),
-              );
-            }
-          },
-        ),
-        alignment: Alignment.center,
-      )
-    ]);
+                      child: _diaryListItem(item),
+                    );
+                  },
+                );
+              } else {
+                return Center(
+                  child: PlatformCircularProgressIndicator(),
+                );
+              }
+            },
+          ),
+          alignment: Alignment.center,
+        )
+      ],
+    );
   }
 
   Widget _diaryListItem(Diary diary) {
@@ -148,78 +139,78 @@ class _MainPageState extends State<MainPage> {
     var maxLines = 10;
 
     showPlatformDialog(
-        barrierDismissible: true,
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0)), //this right here
-            child: Container(
-              height: maxLines * 40.0,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 15.0),
+      barrierDismissible: true,
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0)), //this right here
+          child: Container(
+            height: maxLines * 40.0,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 15.0),
+                      child: PlatformText(
+                        '일기 저장',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 20.0, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 10),
+                      child: PlatformTextField(
+                        controller: titleTextController,
+                        material: (context, platform) => MaterialTextFieldData(
+                          decoration: InputDecoration(
+                              alignLabelWithHint: true, hintText: '제목'),
+                        ),
+                        cupertino: (context, platform) =>
+                            CupertinoTextFieldData(placeholder: '제목'),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 10),
+                      child: PlatformTextField(
+                        controller: contentTextController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: 10,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 320.0,
+                      child: PlatformButton(
+                        color: const Color(0xFF1BC0C5),
                         child: PlatformText(
-                          '일기 저장',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 20.0, fontWeight: FontWeight.bold),
+                          "Save",
+                          style: TextStyle(color: Colors.white),
                         ),
+                        onPressed: () {
+                          if (contentTextController.text == '' ||
+                              titleTextController.text == '') {
+                            Toast.show('입력하지 않은 항목이 있습니다.', context);
+                          } else {
+                            writeDiary(titleTextController.text,
+                                contentTextController.text);
+                            Navigator.pop(context);
+                          }
+                        },
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 10),
-                        child: PlatformTextField(
-                          controller: titleTextController,
-                          material: (context, platform) =>
-                              MaterialTextFieldData(
-                                  decoration: InputDecoration(
-                                      alignLabelWithHint: true,
-                                      hintText: '제목')),
-                          cupertino: (context, platform) =>
-                              CupertinoTextFieldData(placeholder: '제목'),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 10),
-                        child: PlatformTextField(
-                          controller: contentTextController,
-                          keyboardType: TextInputType.multiline,
-                          maxLines: 10,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 320.0,
-                        child: PlatformButton(
-                          color: const Color(0xFF1BC0C5),
-                          child: PlatformText(
-                            "Save",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          onPressed: () {
-                            if (contentTextController.text == '' ||
-                                titleTextController.text == '') {
-                              Toast.show('입력하지 않은 항목이 있습니다.', context);
-                            } else {
-                              writeDiary(titleTextController.text,
-                                  contentTextController.text);
-                              Navigator.pop(context);
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
   void _showDiary(Diary diary) {
@@ -230,9 +221,6 @@ class _MainPageState extends State<MainPage> {
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
-            side: BorderSide(
-                // color: const Color(0xFF1BC0C5),
-                ),
           ),
           child: Container(
             height: 300.0,
