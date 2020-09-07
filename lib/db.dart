@@ -34,52 +34,44 @@ class DBHelper {
   //Create
   createData(Diary diary) async {
     final db = await database;
-    var res = await db.rawInsert(
-        'INSERT INTO $TableName(title, content, uploadDate) VALUES(?, ?, ?)',
-        [diary.title, diary.content, diary.uploadDate]);
+    var res = await db.insert(TableName, diary.toJson());
     return res;
   }
 
   //Read
   getDiary(int id) async {
     final db = await database;
-    var res = await db.rawQuery('SELECT * FROM $TableName WHERE id = ?', [id]);
-    return res.isNotEmpty
-        ? Diary(
-            id: res.first['id'],
-            title: res.first['title'],
-            content: res.first['content'],
-            uploadDate: res.first['uploadDate'])
-        : Null;
+    var res = await db.query(TableName, where: 'id = ?', whereArgs: [id]);
+    return res.isNotEmpty ? Diary.fromJson(res.first) : Null;
   }
 
   //Read All
   Future<List<Diary>> getAllDiarys() async {
     final db = await database;
-    var res = await db.rawQuery('SELECT * FROM $TableName');
-    List<Diary> list = res.isNotEmpty
-        ? res
-            .map((c) => Diary(
-                id: c['id'],
-                title: c['title'],
-                content: c['content'],
-                uploadDate: c['uploadDate']))
-            .toList()
-        : [];
+    var res = await db.query(TableName);
+    List<Diary> list =
+        res.isNotEmpty ? res.map((c) => Diary.fromJson(c)).toList() : [];
 
     return list;
+  }
+
+  updateDiary(Diary diary) async {
+    final db = await database;
+    var res = db.update(TableName, diary.toJson(),
+        where: 'id = ?', whereArgs: [diary.id]);
+    return res;
   }
 
   //Delete
   deleteDiary(int id) async {
     final db = await database;
-    var res = db.rawDelete('DELETE FROM $TableName WHERE id = ?', [id]);
+    var res = db.delete(TableName, where: 'id = ?', whereArgs: [id]);
     return res;
   }
 
   //Delete All
   deleteAllDiarys() async {
     final db = await database;
-    db.rawDelete('DELETE FROM $TableName');
+    db.delete(TableName);
   }
 }
