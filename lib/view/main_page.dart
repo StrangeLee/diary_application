@@ -1,3 +1,4 @@
+import 'package:diary_application/bloc/diary_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:diary_application/data/diary.dart';
 import 'package:diary_application/db.dart';
@@ -10,6 +11,8 @@ class MainPage extends StatefulWidget {
   @override
   _MainPageState createState() => _MainPageState();
 }
+
+final bloc = DiaryBloc();
 
 class _MainPageState extends State<MainPage> {
   @override
@@ -63,8 +66,8 @@ class _MainPageState extends State<MainPage> {
           height: 10.0,
         ),
         Container(
-          child: FutureBuilder(
-            future: DBHelper().getAllDiarys(),
+          child: StreamBuilder(
+            stream: bloc.diarys,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return ListView.builder(
@@ -75,7 +78,7 @@ class _MainPageState extends State<MainPage> {
                     return Dismissible(
                       key: UniqueKey(),
                       onDismissed: (direction) {
-                        DBHelper().deleteDiary(item.id);
+                        bloc.deleteDiary(index);
                         setState(() {});
                       },
                       child: _diaryListItem(item),
@@ -273,7 +276,7 @@ class _MainPageState extends State<MainPage> {
     String nowDate = DateFormat('yyyy-MM-dd').format(now);
 
     Diary diary = Diary(title: title, content: contnent, uploadDate: nowDate);
-    DBHelper().createData(diary);
+    bloc.addDiarys(diary);
     setState(() {});
   }
 }
